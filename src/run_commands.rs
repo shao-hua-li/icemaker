@@ -155,7 +155,7 @@ pub(crate) fn run_rustc(
     cmd.args(rustc_flags);
 
     cmd.current_dir(format!("{tempdir_path}"));
-    cmd.arg("-Zwrite-long-types-to-disk=no");
+    // cmd.arg("-Zwrite-long-types-to-disk=no");
 
     //dbg!(&cmd);
 
