@@ -1051,7 +1051,7 @@ impl ICE {
         .unwrap();
         let cmd_compile_status_old = cmd_output_old.status.code().unwrap_or(0);
 
-        if cmd_compile_status != cmd_compile_status_old {
+        if (cmd_compile_status != cmd_compile_status_old) && (cmd_compile_status_old == 0) {
             let ice_msg = format!(
                 "ICE: different compile status:
                 Error of master: {}
