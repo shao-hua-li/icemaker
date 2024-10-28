@@ -167,7 +167,7 @@ pub(crate) fn run_rustc(
     // run the command
     let output = prlimit_run_command(&mut cmd)
         .unwrap_or_else(|_| panic!("Error: {cmd:?}, executable: {executable:?}"));
-    // dbg!(&output);
+    
 
     CommandOutput::new(
         output,
