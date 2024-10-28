@@ -1052,7 +1052,7 @@ impl ICE {
         let cmd_compile_status_old = cmd_output_old.status.code().unwrap_or(0);
 
         if cmd_compile_status != cmd_compile_status_old {
-            eprintln!(
+            let ice_msg = format!(
                 "ICE: different compile status: {} vs {}",
                 cmd_compile_status, cmd_compile_status_old
             );
@@ -1062,15 +1062,23 @@ impl ICE {
                 String::from_utf8_lossy(&cmd_output_old.stderr)
             );
             // create a tmp.txt in the current directory if it does not exist
-            let tmp_path = Path::new("tmp.txt");
-            // append the output to the tmp.txt
-            let mut tmp_file = OpenOptions::new()
-                .write(true)
-                .append(true)
-                .create(true)
-                .open(tmp_path)
-                .unwrap();
-            writeln!(tmp_file, "file: {}\n", file.display()).unwrap();
+            let query_stack = Vec::new();
+            let ice = ICE {
+                regresses_on: Regression::Master,
+                needs_feature: false,
+                file: file.to_owned(),
+                args: compiler_flags
+                    .iter()
+                    .cloned()
+                    .map(|f| f.to_string())
+                    .collect::<Vec<String>>(),
+                error_reason: ice_msg.clone(),
+                ice_msg,
+                executable: Executable::Rustc,
+                query_stack,
+                kind: ICEKind::DoubleIce,
+            };
+            return Some(ice);
         }
 
         // dbg!(&actual_args);
