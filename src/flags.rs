@@ -21,6 +21,19 @@ static DEFAULT_RUSTFLAGS: &[&[&str]] = &[
         "-Zcrate-attr=feature(must_not_suspend)",
         "-Zcrate-attr=feature(non_exhaustive_omitted_patterns_lint)",
         "-Ztranslate-lang=en_US",
+        // "-Clto=off", // rustc_codegen_gcc
+        "--edition=2021",
+        //  "-Ztreat-err-as-bug=3",
+        "--cap-lints=warn",
+        "--verbose",
+    ],
+    &[
+        // lints #1
+        "-Zunstable-options",
+        "-Zcrate-attr=feature(strict_provenance)",
+        "-Zcrate-attr=feature(must_not_suspend)",
+        "-Zcrate-attr=feature(non_exhaustive_omitted_patterns_lint)",
+        "-Ztranslate-lang=en_US",
         "-Zmaximal-hir-to-mir-coverage",
         // "-Clto=off", // rustc_codegen_gcc
         "--edition=2021",
@@ -4259,7 +4272,9 @@ pub(crate) static RUSTC_FLAGS: Lazy<&[&[&str]]> = Lazy::new(|| {
         EXPENSIVE_RUSTFLAGS
     } else {
         // cheaper default flags
-        DEFAULT_RUSTFLAGS
+        // DEFAULT_RUSTFLAGS
+        // use the first two flags
+        &DEFAULT_RUSTFLAGS[..1]
     }
 });
 

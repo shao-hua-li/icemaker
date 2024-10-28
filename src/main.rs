@@ -1056,6 +1056,11 @@ impl ICE {
                 "ICE: different compile status: {} vs {}",
                 cmd_compile_status, cmd_compile_status_old
             );
+            eprintln!(
+                "Error of new: {} \n Error of old: {}", 
+                String::from_utf8_lossy(&cmd_output.stderr),
+                String::from_utf8_lossy(&cmd_output_old.stderr)
+            );
             // create a tmp.txt in the current directory if it does not exist
             let tmp_path = Path::new("tmp.txt");
             // append the output to the tmp.txt
