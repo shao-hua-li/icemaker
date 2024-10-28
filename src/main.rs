@@ -48,6 +48,7 @@ use crate::smolfuzz::*;
 
 use std::collections::HashSet;
 use std::ffi::{OsStr, OsString};
+use std::fs::OpenOptions;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -949,6 +950,12 @@ impl ICE {
 
         // convert IntoIterator<Item &&str> to &[&str]
         let compiler_flags = &compiler_flags.into_iter().cloned().collect::<Vec<&str>>()[..];
+        // add "-Awarnings" to compiler_flags and keep the type as &[&str]
+        let compiler_flags = &compiler_flags
+            .iter()
+            .cloned()
+            .chain(std::iter::once("-Awarnings"))
+            .collect::<Vec<&str>>()[..];
 
         let thread_start = Instant::now();
         const SECONDS_LIMIT: u64 = PROCESS_TIMEOUT_S as u64;
@@ -1024,6 +1031,42 @@ impl ICE {
             Executable::Marker => run_marker(file, compiler_flags, global_tempdir_path),
         }
         .unwrap();
+
+        // print the command
+        // dbg!(&_cmd);
+        // print cmd_output:Output
+        // dbg!(&cmd_output);
+        // print the status as integer
+        let cmd_compile_status = cmd_output.status.code().unwrap_or(0);
+
+        // run a different rustc
+        let rustc_exec_old = "/home/shaohua/.rustup/toolchains/nightly-2022-08-08-x86_64-unknown-linux-gnu/bin/rustc";
+        let (cmd_output_old, _cmd_old, actual_args_old) = run_rustc(
+            rustc_exec_old,
+            file,
+            incremental,
+            compiler_flags,
+            global_tempdir_path,
+        )
+        .unwrap();
+        let cmd_compile_status_old = cmd_output_old.status.code().unwrap_or(0);
+
+        if cmd_compile_status != cmd_compile_status_old {
+            eprintln!(
+                "ICE: different compile status: {} vs {}",
+                cmd_compile_status, cmd_compile_status_old
+            );
+            // create a tmp.txt in the current directory if it does not exist
+            let tmp_path = Path::new("tmp.txt");
+            // append the output to the tmp.txt
+            let mut tmp_file = OpenOptions::new()
+                .write(true)
+                .append(true)
+                .create(true)
+                .open(tmp_path)
+                .unwrap();
+            writeln!(tmp_file, "file: {}\n", file.display()).unwrap();
+        }
 
         // dbg!(&actual_args);
 
