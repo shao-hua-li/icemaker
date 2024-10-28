@@ -1053,13 +1053,16 @@ impl ICE {
 
         if cmd_compile_status != cmd_compile_status_old {
             let ice_msg = format!(
-                "ICE: different compile status: {} vs {}",
-                cmd_compile_status, cmd_compile_status_old
-            );
-            eprintln!(
-                "Error of new: {} \n Error of old: {}", 
+                "ICE: different compile status:
+                Error of master: {}
+                Code of Master: {} 
+                vs 
+                Error of old: {}
+                Code of old: {}",
                 String::from_utf8_lossy(&cmd_output.stderr),
-                String::from_utf8_lossy(&cmd_output_old.stderr)
+                cmd_compile_status, 
+                String::from_utf8_lossy(&cmd_output_old.stderr),
+                cmd_compile_status_old
             );
             // create a tmp.txt in the current directory if it does not exist
             let query_stack = Vec::new();
